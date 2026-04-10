@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plaka Kontrol Aracı - APP Plaka Tespiti - plaka.mehmetemredogan.tr</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="container glass-panel">
+        <header style="position: relative;">
+            <div class="logo">
+                <h1>Plaka Kontrolcüsü</h1>
+            </div>
+            <p class="subtitle">Mevzuata Aykırı (APP) Plaka Tespit Sistemi</p>
+        </header>
+
+        <main>
+            <section class="scanner-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fa-solid fa-camera camera-icon"></i>
+                        <h2>Plaka Görselini Yükle veya Kamerayı Aç</h2>
+                        <p>Ön veya arka plakanın net bir fotoğrafını yükleyin veya kameranızı kullanarak anlık tarama
+                            yapın. Çekimlerinizi plakanın tam karşısından yapmanız gerekmektedir. Görselde plakanız
+                            dışında farklı bir yazı olmamalı (Örn. Araç modeli yazısı).</p>
+
+                        <div class="action-buttons">
+                            <label class="btn btn-primary">
+                                <i class="fa-solid fa-upload"></i> Görsel Yükle
+                                <input type="file" id="fileInput" accept="image/*" hidden>
+                            </label>
+                            <button class="btn btn-secondary" id="cameraBtn">
+                                <i class="fa-solid fa-video"></i> Kamerayı Aç
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="preview-area" id="previewArea" style="display: none;">
+                        <video id="cameraVideo" autoplay playsinline style="display: none;"></video>
+                        <canvas id="cameraCanvas" style="display: none;"></canvas>
+                        <img id="imagePreview" src="" alt="Yüklenen Plaka" style="display: none;">
+
+                        <div class="scanner-line" id="scannerLine"></div>
+                        <div class="scanning-text" id="scanningText">Analiz Ediliyor...</div>
+
+                        <button class="btn btn-capture" id="captureBtn" style="display: none;">
+                            <i class="fa-solid fa-camera"></i> Fotoğraf Çek
+                        </button>
+                        <button class="btn btn-close-preview" id="closePreviewBtn">
+                            <i class="fa-solid fa-times"></i> Kapat
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="result-section glass-panel" id="resultSection" style="display: none;">
+                <div class="result-header">
+                    <h2 id="resultTitle">Analiz Sonucu</h2>
+                    <div class="status-badge" id="statusBadge">Analiz Ediliyor...</div>
+                </div>
+
+                <div class="result-body">
+                    <div class="plate-display">
+                        <div class="tr-band">TR</div>
+                        <div class="plate-text" id="detectedPlateText">34 TEST 001</div>
+                    </div>
+
+                    <div class="analysis-details">
+                        <ul class="check-list" id="checkList">
+                            <!-- JS will populate these -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; width: 100%; margin-top: 1.5rem;">
+                    <button class="btn btn-primary" id="resetBtn" style="flex: 1;">Yeni Sorgulama</button>
+                    <button class="btn btn-outline" id="disclaimerBtn"
+                        style="flex: 1; border: 1px solid var(--border-color); color: var(--text-secondary);">
+                        <i class="fa-solid fa-balance-scale"></i> Yasal Uyarı
+                    </button>
+                </div>
+            </section>
+
+            <section class="info-section">
+                <h2>Değişim Rehberi</h2>
+                <div class="guide-grid">
+                    <div class="guide-card">
+                        <div class="card-icon"><i class="fa-solid fa-check-circle" style="color: #4ade80;"></i></div>
+                        <h3>Standart Geçerli Plaka</h3>
+                        <p>Aşağıdaki tüm özellikleri taşıyan plakalar yasaldır ve değişim gerektirmez:</p>
+                        <div class="steps-mini" style="margin-top:0.75rem;">
+                            <span>• 11x52 cm veya 21x32 cm ölçüler.</span>
+                            <span>• 4x10 cm mavi kutuda TR rumuzu.</span>
+                            <span>• Yönetmeliğe uygun harf ve rakamlar.</span>
+                            <span>• TŞOF veya Esnaf Odası mührü.</span>
+                            <span>• Kusursuz vida yerleşimi.</span>
+                            <span>• TR & Ayyıldız hologramı, dalgalı şerit.</span>
+                        </div>
+                    </div>
+                    <div class="guide-card">
+                        <div class="card-icon"><i class="fa-solid fa-times-circle" style="color: #f87171;"></i></div>
+                        <h3>APP Plaka (Standart Dışı)</h3>
+                        <p>TŞOF mührü ve güvenlik özellikleri bulunmayan plakalar geçersizdir. Yeni plaka basımı için
+                            Noter ve TŞOF başvurusu zorunludur.</p>
+                        <div class="steps-mini">
+                            <span>1. Kolluk Bildirimi (Kayıp)</span>
+                            <span>2. Noter Başvurusu</span>
+                            <span>3. TŞOF Plaka Basımı</span>
+                        </div>
+                    </div>
+                    <div class="guide-card">
+                        <div class="card-icon"><i class="fa-solid fa-exclamation-circle" style="color: #fbbf24;"></i>
+                        </div>
+                        <h3>Yazı Karakteri Değişmiş</h3>
+                        <p>TŞOF mührü olsa bile harf/rakam boyutları değiştirilmiş olanlar yenilenmelidir.</p>
+                        <div class="steps-mini">
+                            <span>1. Noterden Plaka Basım Talep Belgesi</span>
+                            <span>2. TŞOF Plaka Basımı (Aynı Numara)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="feedback-section" style="margin-bottom: 1.5rem;">
+                <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary);">Geri Bildirimleriniz
+                    İçin</p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <a href="mailto:med@mehmetemredogan.tr" class="btn btn-outline"
+                        style="padding: 0.5rem 1rem; font-size: 0.9rem; text-decoration: none;">
+                        <i class="fa-regular fa-envelope"></i> E-Posta
+                    </a>
+                    <a href="https://x.com/mehmetemredogan" target="_blank" rel="noopener noreferrer"
+                        class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem; text-decoration: none;">
+                        <i class="fa-brands fa-x-twitter"></i> X (Twitter)
+                    </a>
+                </div>
+            </div>
+            <p>Bu uygulama bir simülasyondur. Elde edilen sonuçlar belirli kriterlere göre algoritmalar tarafından
+                gösterilmektedir. Kesin hukuki karar için resmi makamlara başvurunuz.</p>
+            <br>
+            <p>mehmetemredogan.tr &copy; 2026</p>
+        </footer>
+    </div>
+
+    <!-- Disclaimer Modal -->
+    <div id="disclaimerModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div
+            style="background: white; padding: 2rem; border-radius: 16px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; text-align: left;">
+            <h3 style="margin-bottom: 1rem; color: var(--text-primary);"><i class="fa-solid fa-balance-scale"></i>
+                Sorumluluk Reddi Beyanı</h3>
+            <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 1rem; line-height: 1.5;">
+                Bu uygulama (Plaka Kontrolcüsü), araç plakalarının mevcut mevzuata ve TŞOF standartlarına uygunluğunu
+                analiz etmek amacıyla geliştirilmiş <strong>yapay zeka destekli bir simülasyon ve bilgilendirme
+                    aracıdır.</strong>
+            </p>
+            <ul
+                style="font-size: 0.9rem; color: #4b5563; margin-bottom: 1.5rem; line-height: 1.5; padding-left: 1.5rem;">
+                <li style="margin-bottom: 0.5rem;">Uygulama tarafından sunulan sonuçlar kesin hukuki veya resmi bir
+                    geçerlilik taşımaz.</li>
+                <li style="margin-bottom: 0.5rem;">Elde edilen veriler ışığında alınacak her türlü aksiyon (Noter
+                    başvurusu, plaka yenileme, emniyet bildirimi vb.) kullanıcının kendi sorumluluğundadır.</li>
+                <li style="margin-bottom: 0.5rem;">Fotoğraf açısı, ışıklandırma, yansıma veya OCR hataları nedeniyle
+                    yanlış tespitler (false-positive / false-negative) yapılabilir.</li>
+                <li style="margin-bottom: 0.5rem;">Uygulama geliştiricisi, bu aracın kullanımından doğabilecek maddi,
+                    manevi, hukuki veya cezai hiçbir zarardan sorumlu tutulamaz.</li>
+            </ul>
+            <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 1.5rem; font-weight: 600;">
+                Kesin ve resmi bilgi için lütfen Emniyet Genel Müdürlüğü (EGM) veya Türkiye Şoförler ve Otomobilciler
+                Federasyonu (TŞOF) ile iletişime geçiniz.
+            </p>
+            <div style="display: flex; justify-content: flex-end;">
+                <button id="closeDisclaimerBtn" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Anladım, Kabul
+                    Ediyorum</button>
+            </div>
+        </div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <script async src="https://docs.opencv.org/4.8.0/opencv.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+    <img src="https://pixel.kyr.li/tracker.php?site=plaka.kyr.li" alt="plaka.kyr.li" style="display: none;">
+</body>
+
+</html>
